@@ -9,8 +9,10 @@ OpenCV Ubuntu installation guide can be found
 	1. http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
 	2. http://www.pyimagesearch.com/2015/06/22/install-opencv-3-0-and-python-2-7-on-ubuntu/
 
+You may need to add symlink 
+
 -----
-usage: main.py [-h] --user USER [--num_photos NUM_PHOTOS] [--rows ROWS]
+usage: instagram-collage.py [-h] --user USER [--num_photos NUM_PHOTOS] [--rows ROWS]
                [--cols COLS] [--cell_width CELL_WIDTH]
                [--cell_height CELL_HEIGHT] [--border BORDER] [-o OUTPUT] [-s]
 
