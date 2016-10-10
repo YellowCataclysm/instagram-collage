@@ -1,0 +1,28 @@
+Make a collage from instagram photos
+
+Requirements:
+	- httplib2
+	- numpy
+	- opencv ( with python binding ) 
+
+OpenCV Ubuntu installation guide can be found
+	1. http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
+	2. http://www.pyimagesearch.com/2015/06/22/install-opencv-3-0-and-python-2-7-on-ubuntu/
+
+-----
+usage: main.py [-h] --user USER [--num_photos NUM_PHOTOS] [--rows ROWS]
+               [--cols COLS] [--cell_width CELL_WIDTH]
+               [--cell_height CELL_HEIGHT] [--border BORDER] [-o OUTPUT] [-s]
+
+optional arguments:
+  -h, --help            	show this help message and exit
+  --user USER           	Instagram account name to be used as source of images
+  --num_photos NUM_PHOTOS	number of photos to use in collage.
+  --rows ROWS           	number of rows in collage
+  --cols COLS           	number of columns in collage
+  --cell_width CELL_WIDTH	width of a single cell in pixels
+  --cell_height CELL_HEIGHT	height of a single cell in pixels
+  --border BORDER       	Add black borders to cells and extra border to whole image
+  -o OUTPUT, --output OUTPUT	Output file name.
+  -s, --show            	Show collage after script complete
+
