@@ -6,7 +6,7 @@ from Worker import DownloadWorker
 from Queue import Queue
 import multiprocessing
 
-def download_with_workers(urls, resize_widht, resize_height,border=0):
+def download_with_workers(urls, resize_widht, resize_height, border=0):
 	downloaded_images = [None] * len(urls)
 	workers = []
 	q = Queue()

@@ -1,11 +1,12 @@
 from threading import Thread
 from Queue import Queue
-import urllib
+import urllib2
+import socket
 import cv2
 import numpy
 
 class DownloadWorker(Thread):
-	def __init__(self, queue, widht, height, border_width = 0):
+	def __init__(self, queue, widht, height, border_width = 0, timeout = socket._GLOBAL_DEFAULT_TIMEOUT):
 		Thread.__init__(self)
 		self.data = []
 		self.__queue = queue
@@ -16,6 +17,7 @@ class DownloadWorker(Thread):
 		self.__border_color = [0, 0, 0]
 		self.__blank_image = numpy.zeros((widht,height,3), numpy.uint8)
 		self.__blank_image = self.add_border(self.__blank_image)
+		self.__timeout = timeout
 
 	def run(self):
 		while True:
@@ -23,12 +25,23 @@ class DownloadWorker(Thread):
 			if url == '':
 				self.data.append((self.__blank_image,index))
 			else:
-				resp = urllib.urlopen(url)
-				img_buffer= numpy.asarray(bytearray(resp.read()), dtype="uint8")
-				original_image = cv2.imdecode(img_buffer, cv2.IMREAD_COLOR)
-				resized_image = self.resized_image(original_image)
-				resized_image = self.add_border(resized_image)
-				self.data.append((resized_image,index))
+				request = urllib2.Request(url)
+				resp = self.try_open(request, self.__timeout)
+				if resp is None:
+					self.data.append((self.__blank_image,index))
+				else:
+					try:
+						data = resp.read()
+					except socket.error as err:
+						print "Cannot read image data from connection."
+						print "Image skipped"
+						self.data.append((self.__blank_image,index))
+					else:
+						img_buffer= numpy.asarray(bytearray(data), dtype="uint8")
+						original_image = cv2.imdecode(img_buffer, cv2.IMREAD_COLOR)
+						resized_image = self.resized_image(original_image)
+						resized_image = self.add_border(resized_image)
+						self.data.append((resized_image,index))
 			self.__queue.task_done()
 
 	def resized_image(self,image):
@@ -39,5 +52,22 @@ class DownloadWorker(Thread):
 			b = self.__border_width
 			return cv2.copyMakeBorder(image,b,b,b,b,cv2.BORDER_CONSTANT,value=self.__border_color)
 		return image
+
+	def try_open(self, request, timeout):
+		try: resp = urllib2.urlopen(request,timeout=timeout)
+		except urllib2.URLError as err:
+			if hasattr(err, 'reason'):
+				print "Cannot reach the server: " + str(err.reason)
+			elif hasattr(err, 'code'):
+				print "Requst failed with code: " + str(err.code)
+			print "Image skipped."
+			return None
+		except socket.error as err:
+			print "Something went wrong while downloading image."
+			print "Image skipped."
+			return None
+		else:
+			return resp
+
 
 

@@ -1,6 +1,6 @@
 
-import httplib2
 import json
+import urllib2
 
 def get_images_urls(username, max_images):
 	last_id = None
@@ -13,22 +13,33 @@ def get_images_urls(username, max_images):
 			data, more_available, last_id = __extract_media_data(content)
 			images_info.extend(data)
 		else:
-			print "Cannot fetch media for specified username (" + username + ")."
-			print "Profile is private or invalid"
 			quit()
 		if (max_images <= len(images_info)) or (more_available is False):
 			return images_info[:max_images]
 	raise RuntimeError('get_images_info() -> Data acquisition loop limit was exceeded. Too many iterations.')
 
 def __load_media_page(username, max_id_param=None):
-	http = httplib2.Http()
 	url = "https://www.instagram.com/" + username + "/media/"
 	if max_id_param is not None:
 		url += "?max_id=" + max_id_param
-	resp, content = http.request(url, "GET")
-	if resp['status'] == '200':
-		return content
-	return None
+
+	request = urllib2.Request(url)
+	try:
+		resp = urllib2.urlopen(request)
+	except urllib2.URLError as err:
+		if hasattr(err, 'reason'):
+			print "Cannot reach the server: " + str(err.reason)
+		elif hasattr(err, 'code'):
+			print "Requst failed with code: " + str(err.code)
+			print "Maybe passed profile is private or invalid"
+			return None
+	else:
+		try:
+			data = resp.read()
+		except socket.error as err:
+			print "Cannot read data from connection."
+			return None
+		else: return data
 
 def __extract_media_data(content):
 	json_data = json.loads(content)

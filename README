@@ -1,7 +1,6 @@
 Make a collage from instagram photos
 
 Requirements:
-	- httplib2
 	- numpy
 	- opencv ( with python binding ) 
 
