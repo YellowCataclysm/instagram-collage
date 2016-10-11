@@ -32,12 +32,14 @@ def merge_horizontally(images):
 	rows_num, _ , channels_num = images[0].shape
 	result = numpy.zeros([rows_num,0,channels_num],numpy.uint8) # initially create a fake array
 	for image in images:
-		result = numpy.concatenate((result,image),axis=1)
+		try: result = numpy.concatenate((result,image),axis=1)
+		except Exception as err: print "Images size mismatching.", quit()
 	return result
 
 def merge_vertically(images):
 	_, columns_num, channels_num = images[0].shape
 	result = numpy.zeros([0,columns_num,channels_num],numpy.uint8) # initially create a fake array
 	for image in images:
-		result = numpy.concatenate((result,image),axis=0)
+		try: result = numpy.concatenate((result,image),axis=0)
+		except Exception as err: print "Images size mismatching.", quit()
 	return result

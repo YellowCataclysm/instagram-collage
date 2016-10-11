@@ -59,7 +59,10 @@ if border != 0:
 	b = border
 	result = cv2.copyMakeBorder(result,b,b,b,b,cv2.BORDER_CONSTANT,value=[0,0,0])
 
-cv2.imwrite(out, result)
+try:
+	cv2.imwrite(out, result)
+except Exception as err:
+	print "Cannot write file with name " + out
 if args.show is True:
 	cv2.imshow(out, result)
 if cv2.waitKey() & 0xff == 27: quit()
